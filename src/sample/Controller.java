@@ -12,18 +12,14 @@ import javafx.scene.control.TextField;
 
 public class Controller
 {
-
-    @FXML
-    private ResourceBundle resources;
-
-    @FXML
-    private URL location;
-
     @FXML
     private TextArea txtText;
 
     @FXML
     private Button btnText;
+
+    @FXML
+    private TextField txtSentence;
 
     @FXML
     private TextField txtLines;
@@ -38,6 +34,7 @@ public class Controller
     void initialize() {
         assert txtText != null : "fx:id=\"txtText\" was not injected: check your FXML file 'sample.fxml'.";
         assert btnText != null : "fx:id=\"btnText\" was not injected: check your FXML file 'sample.fxml'.";
+        assert txtSentence != null : "fx:id=\"txtSentence\" was not injected: check your FXML file 'sample.fxml'.";
         assert txtLines != null : "fx:id=\"txtLines\" was not injected: check your FXML file 'sample.fxml'.";
         assert txtWords != null : "fx:id=\"txtWords\" was not injected: check your FXML file 'sample.fxml'.";
         assert txtChars != null : "fx:id=\"txtChars\" was not injected: check your FXML file 'sample.fxml'.";
@@ -46,40 +43,72 @@ public class Controller
     @FXML
     void analyzeTextClicked(ActionEvent event)
     {
+        // get sentences
+        int sentenceCount = getSentences(txtText);
+        txtSentence.setText((String.valueOf(sentenceCount)));
+
+        // get line number
         int lineCount = getLines(txtText);
         txtLines.setText(String.valueOf(lineCount));
 
+        // get word count
         int wordCount = getWords(txtText);
         txtWords.setText(String.valueOf(wordCount));
 
-        int charCount = txtText.getText().length();
+        // get character count
+        int charCount = getChars(txtText);
         txtChars.setText(String.valueOf(charCount));
+    }
+
+    private static int getSentences(TextArea txtText)
+    {
+        if (txtText.getText().isEmpty())
+        {
+            return 0;
+        }
+        else
+        {
+            String[] sentences = txtText.getText().split("[.]+");
+            return sentences.length;
+        }
     }
 
     private static int getWords(TextArea txtText)
     {
-        if (txtText == null)
+        String toCount = txtText.getText();
+        if (toCount.isEmpty())
         {
             return 0;
         }
-
-        String toCount = txtText.getText();
-
-        String[] words = toCount.split("\\s+");
-        return words.length;
+        else
+        {
+            String[] words = toCount.split("[\\s]+");
+            return words.length;
+        }
     }
 
     private static int getLines(TextArea txtText)
     {
-        if (txtText == null)
+        if (txtText.getText().isEmpty())
         {
             return 0;
         }
-        return txtText.getText().split("\n").length;
+        else
+        {
+            String[] lines = txtText.getText().split("[\n]+");
+            return lines.length;
+        }
+    }
+
+    private static int getChars(TextArea txtText)
+    {
+        String chars = txtText.getText().replaceAll("[ \t\n]+", "");
+        return chars.length();
     }
 
     public void resetFields(ActionEvent actionEvent)
     {
+        // clear fields
         txtText.clear();
         txtChars.clear();
         txtLines.clear();
@@ -88,6 +117,7 @@ public class Controller
 
     public void exitApplication(ActionEvent actionEvent)
     {
-        Platform.exit();
+        // exit application
+        System.exit(0);
     }
 }
